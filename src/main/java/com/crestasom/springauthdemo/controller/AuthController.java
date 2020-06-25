@@ -35,21 +35,19 @@ public class AuthController {
 
 	@GetMapping("/login")
 	public String login(@RequestParam(required = false) String message, Model model) {
-		model.addAttribute("message", message);
 		return "login";
 	}
 
 	@GetMapping("/logout")
 	public RedirectView logout(RedirectAttributes redirectAttributes) {
-		redirectAttributes.addAttribute("message", "You are now Logged out.");
-		// redirectAttributes.addAttribute("attribute", "redirectWithRedirectView");
+		redirectAttributes.addFlashAttribute("message", "You are now Logged out.");
 		return new RedirectView("login");
 	}
+
 	@PostMapping("/check-login")
 	@ResponseBody
 	public RedirectView checkLogin(HttpServletRequest request, @RequestParam("username") String userName,
 			@RequestParam String password, RedirectAttributes redirectAttributes) {
-
 		if (userService.checkLogin(userName, password)) {
 			System.out.println(SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
 			if (SecurityContextHolder.getContext().getAuthentication() == null || SecurityContextHolder.getContext()
@@ -58,20 +56,20 @@ public class AuthController {
 						new ArrayList<>());
 				SecurityContextHolder.getContext().setAuthentication(token);
 			}
-			redirectAttributes.addAttribute("message", "Login Successful");
-			// redirectAttributes.addAttribute("attribute", "redirectWithRedirectView");
+			redirectAttributes.addFlashAttribute("message", "Login Successful");
 			return new RedirectView("hello");
 
 		}
-		redirectAttributes.addAttribute("message", "Invalid Username or Password");
-		// redirectAttributes.addAttribute("attribute", "redirectWithRedirectView");
+		redirectAttributes.addFlashAttribute("message", "Invalid Username or Password");
 		return new RedirectView("login");
 	}
 
 	@GetMapping("/hello")
 	@ResponseBody
-	public String hello(@RequestParam(required = false) String message) {
-		return "Hello from Secure Page\n" + message;
+	public String hello(Model model) {
+		String msg = model.getAttribute("message") == null ? "" : model.getAttribute("message") + "";
+
+		return "Hello from Secure Page\n" + msg;
 	}
 
 	@GetMapping("/add-user")
