@@ -34,7 +34,7 @@ public class AuthController {
 	UserRepo repo;
 
 	@GetMapping("/login")
-	public String login(@RequestParam(required = false) String message, Model model) {
+	public String login() {
 		return "login";
 	}
 
