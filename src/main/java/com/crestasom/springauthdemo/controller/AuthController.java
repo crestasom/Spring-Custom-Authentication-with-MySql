@@ -48,23 +48,24 @@ public class AuthController {
 	@ResponseBody
 	public RedirectView checkLogin(HttpServletRequest request, @RequestParam("username") String userName,
 			@RequestParam String password, RedirectAttributes redirectAttributes) {
-		if (userService.checkLogin(userName, password)) {
-			System.out.println(SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
+		User user = userService.checkLogin(userName, password);
+		if (user != null) {
 			if (SecurityContextHolder.getContext().getAuthentication() == null || SecurityContextHolder.getContext()
 					.getAuthentication().getClass().equals(AnonymousAuthenticationToken.class)) {
 				UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userName, password,
-						new ArrayList<>());
+						user.getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(token);
 			}
 			redirectAttributes.addFlashAttribute("message", "Login Successful");
-			return new RedirectView("hello");
+			System.out.println(SecurityContextHolder.getContext().getAuthentication());
+			return new RedirectView("user");
 
 		}
 		redirectAttributes.addFlashAttribute("message", "Invalid Username or Password");
 		return new RedirectView("login");
 	}
 
-	@GetMapping("/hello")
+	@GetMapping("/user")
 	@ResponseBody
 	public String hello(Model model) {
 		String msg = model.getAttribute("message") == null ? "" : model.getAttribute("message") + "";
@@ -72,10 +73,16 @@ public class AuthController {
 		return "Hello from Secure Page\n" + msg;
 	}
 
+	@GetMapping("/admin")
+	@ResponseBody
+	public String admin(Model model) {
+		return "Hello from Admin Page\n";
+	}
+
 	@GetMapping("/add-user")
 	@ResponseBody
-	public void addDemoUser(@RequestParam("username") String userName, @RequestParam String password) {
-		repo.save(new User(userName, encoder.encode(password)));
+	public void addDemoUser(@RequestParam("username") String userName, @RequestParam String password, String role) {
+		repo.save(new User(userName, encoder.encode(password), role));
 	}
 
 }

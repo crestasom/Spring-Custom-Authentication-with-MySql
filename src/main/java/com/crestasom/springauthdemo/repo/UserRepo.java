@@ -8,5 +8,5 @@ import com.crestasom.springauthdemo.entity.User;
 
 public interface UserRepo extends JpaRepository<User, Integer> {
 
-	Optional<User> findByUserName(String userName);
+	Optional<User> findByUsername(String userName);
 }

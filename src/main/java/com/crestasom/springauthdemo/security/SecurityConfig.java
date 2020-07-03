@@ -13,7 +13,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/check-login", "/add-user").permitAll().anyRequest()
+		http.authorizeRequests()
+		.antMatchers("/admin").hasAuthority("ADMIN")
+		.antMatchers("/user").hasAnyAuthority("USER","ADMIN")
+		.antMatchers("/check-login", "/add-user").permitAll().anyRequest()
 				.authenticated().and().formLogin().loginPage("/login").permitAll().and().logout()
 				.logoutSuccessUrl("/logout");
 	}

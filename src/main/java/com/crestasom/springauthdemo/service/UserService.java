@@ -22,12 +22,12 @@ public class UserService {
 		return true;
 	}
 
-	public boolean checkLogin(String userName, String password) {
+	public User checkLogin(String userName, String password) {
 		// TODO Auto-generated method stub
-		Optional<User> user = userRepo.findByUserName(userName);
+		Optional<User> user = userRepo.findByUsername(userName);
 		if (user.isPresent() && encoder.matches(password, user.get().getPassword())) {
-			return true;
+			return user.get();
 		}
-		return false;
+		return null;
 	}
 }
